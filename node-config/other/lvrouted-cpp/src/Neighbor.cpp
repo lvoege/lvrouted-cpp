@@ -66,29 +66,6 @@ void broadcast(int fd, const std::vector<Node> &tree, NeighborSet &neighbors) {
     }
 }
 
-Node florp(const uint8_t *buffer, size_t len) {
-    if (len <= SHA_DIGEST_LENGTH)
-        throw std::runtime_error(std::string("Short packet from "));
-    
-    SHA_CTX sha;
-    if (!SHA1_Init(&sha))
-        throw std::runtime_error("SHA1_Init");
-    if (!secret_key.empty()) {
-        if (!SHA1_Update(&sha, secret_key.data(), secret_key.length()))
-            throw std::runtime_error("SHA1_Update");
-    }
-    if (!SHA1_Update(&sha, &buffer[SHA_DIGEST_LENGTH], len - SHA_DIGEST_LENGTH))
-        throw std::runtime_error("SHA1_Update");
-    unsigned char md[SHA_DIGEST_LENGTH];
-    if (!SHA1_Final(md, &sha))
-        throw std::runtime_error("SHA1_Final");
-    if (memcmp(&buffer[0], &md[0], SHA_DIGEST_LENGTH))
-        throw std::runtime_error(std::string("Invalid signature"));
-    
-    // timestamp at buffer[SHA_DIGEST_LENGTH]. currently unused.
-    return deserialize(&buffer[SHA_DIGEST_LENGTH + sizeof(time_t)], len - SHA_DIGEST_LENGTH - sizeof(time_t));
-}
-
 void handle_data(NeighborSet &neighbors, const uint8_t *buffer, ssize_t len, const in_addr &addr) {
     {
         in_addr a { htonl(addr.s_addr) };
