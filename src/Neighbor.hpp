@@ -57,6 +57,4 @@ std::pair<RouteSet, std::vector<Node>> derive_routes_and_mytree(const RouteSet &
    isn't, set the neighbor's tree to None. */
 bool check_reachable(const Neighbor &, Iface &);
 
-Node florp(const uint8_t *buffer, size_t len);
-
 #endif // NEIGHBOR_HPP

@@ -174,26 +174,6 @@ static void read_config() {
 
 int main(int argc, char *argv[]) {
     setlogmask(LOG_EMERG | LOG_ALERT | LOG_CRIT | LOG_ERR | LOG_WARNING);
-    if (0) {
-        try {
-            uint8_t buffer[65536];
-            std::vector<Node> trees;
-            in_addr a = min_routable;
-            for (int i = 1; i < argc; i++) {
-                std::ifstream ifs(argv[i]);
-                ifs.read((char *)&buffer[0], 65536);
-                trees.push_back(deserialize(&buffer[24], ifs.gcount() - 24));
-                trees.back().addr = a;
-                a.s_addr++;
-            }
-            auto [merged, foo, bar] = merge(trees);
-            std::cout << "MERGED " << to_string(merged.children) << std::endl;
-            return 0;
-        } catch (std::exception &ex) {
-            std::cout << "EEP " << ex.what() << std::endl;
-            return 1;
-        }
-    }
     
     openlog(nullptr, LOG_PERROR | LOG_PID, LOG_DAEMON);
     int c;
