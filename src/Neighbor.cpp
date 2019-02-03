@@ -18,8 +18,6 @@ void broadcast(int fd, const std::vector<Node> &tree, NeighborSet &neighbors) {
     n.addr.s_addr = 0;
     n.children = tree;
     
-    syslog(LOG_DEBUG, "Tree: %s", to_string(tree).data());
-    
     auto p = &buffer[SHA_DIGEST_LENGTH];
     *(time_t *)p = time(nullptr);
     p += sizeof(time_t);
@@ -48,14 +46,12 @@ void broadcast(int fd, const std::vector<Node> &tree, NeighborSet &neighbors) {
     NeighborSet to_delete;
     for (auto &neighbor: neighbors) {
         sin.sin_addr.s_addr = htonl(neighbor.addr.s_addr);
-        syslog(LOG_DEBUG, "Sending tree to neighbor: %s", inet_ntoa(sin.sin_addr));
         if (sendto(fd, &buffer[0], SHA_DIGEST_LENGTH + sizeof(time_t) + len, 0, (const sockaddr *)&sin, sizeof(sin)) == -1) {
             switch (errno) {
             case EHOSTUNREACH:
             case EHOSTDOWN:
             case ECONNREFUSED:
             case ENETDOWN:
-                syslog(LOG_DEBUG, "Neighbor %s is unreachable", inet_ntoa(neighbor.addr));
                 to_delete.insert(neighbor);
                 break;
             default:
@@ -99,7 +95,6 @@ void handle_data(NeighborSet &neighbors, const uint8_t *buffer, ssize_t len, con
         std::ofstream ofs(std::string("/tmp/packet-") + inet_ntoa(a));
         ofs.write((const char *)buffer, len);
     }
-    syslog(LOG_DEBUG, "Handling data from %s", inet_ntoa(addr));
     if (len <= SHA_DIGEST_LENGTH)
         throw std::runtime_error(std::string("Short packet from ") + inet_ntoa(addr));
     
@@ -131,7 +126,6 @@ void handle_data(NeighborSet &neighbors, const uint8_t *buffer, ssize_t len, con
     neighbor.tree = deserialize(&buffer[SHA_DIGEST_LENGTH + sizeof(time_t)], len - SHA_DIGEST_LENGTH - sizeof(time_t));
     neighbor.tree->addr = addr;
     neighbor.last_seen = time(nullptr);
-    syslog(LOG_DEBUG, "Tree from %s: %s", inet_ntoa(addr), to_string(neighbor.tree->children).data());
 }
 
 void nuke_trees_for_iface(NeighborSet &neighbors, const std::string &iface) {

@@ -315,7 +315,6 @@ int main(int argc, char *argv[]) {
                 syslog(LOG_WARNING, "Couldn't select(): %s", strerror(errno));
                 return 1;
             }
-            syslog(LOG_DEBUG, "SELECT %d\n", foo);
             if (FD_ISSET(udpsock.fd, &read_fds)) {
                 struct sockaddr_in sin;
                 socklen_t sin_len = sizeof(sin);
