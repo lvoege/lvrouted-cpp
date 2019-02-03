@@ -25,7 +25,9 @@ bool matches(const Route &route, const in_addr &addr) {
 }
 
 std::string show(const Route &route) {
-    return std::string(inet_ntoa(route.addr)) + "/" + std::to_string(route.netmask) + " -> " + inet_ntoa(route.gateway);
+    in_addr a { htonl(route.addr.s_addr) };
+    in_addr b { htonl(route.gateway.s_addr) };
+    return std::string(inet_ntoa(a)) + "/" + std::to_string(route.netmask) + " -> " + std::string(inet_ntoa(b));
 }
 
 std::string show(const RouteSet &routes) {
@@ -36,7 +38,7 @@ std::string show(const RouteSet &routes) {
     return oss.str();
 }
 
-RouteSet aggregate(RouteSet &rs) {
+RouteSet aggregate(const RouteSet &rs) {
     RouteSet res;
 
     std::vector<Route> routes(rs.begin(), rs.end());
@@ -66,13 +68,18 @@ RouteSet aggregate(RouteSet &rs) {
                 routes.erase(routes.begin() + i);
                 break;
             }
-            for (size_t j = routes.size() - 1; j > i + 1; i--) {
+            for (size_t j = routes.size() - 1; j > i + 1; j--) {
                 auto &other_route = routes[j];
                 if (includes(route, other_route)) {
                     routes.erase(routes.begin() + j);
                 }
             }
         }
+        if (route.netmask == 32) {
+            routes.erase(routes.begin() + i);
+            continue;
+        }
+        i++;
     }
     return res;
 }

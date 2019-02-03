@@ -15,7 +15,7 @@
 #endif
 
 struct Popen {
-    Popen(const std::string &cmd) {
+    explicit Popen(const std::string &cmd) {
         stream = popen(cmd.data(), "r");
     }
     ~Popen() {

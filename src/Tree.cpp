@@ -137,7 +137,7 @@ static uint8_t *serialize_rec(const Node &node, uint8_t *buffer, uint8_t *bounda
         throw std::runtime_error("Buffer too small for tree");
 
 	/* put the number of children in the six sixth-to-last bits */
-	int i = node.children.size() << 20;
+	uint32_t i = node.children.size() << 20;
 	/* or in the the "eth" boolean in the upper six bits */
     if (node.ethernet)
         i |= 1 << 26;
