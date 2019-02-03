@@ -34,7 +34,7 @@ void broadcast(int fd, const std::vector<Node> &tree, NeighborSet &neighbors) {
     }
     if (!SHA1_Update(&sha, &buffer[SHA_DIGEST_LENGTH], len + sizeof(time_t)))
         throw std::runtime_error("SHA1_Update");
-    if (!SHA1_Final((unsigned char *)&buffer[0], &sha))
+    if (!SHA1_Final(&buffer[0], &sha))
         throw std::runtime_error("SHA1_Final");
     
     assert(!compress_data);
@@ -93,7 +93,7 @@ Node florp(const uint8_t *buffer, size_t len) {
     return deserialize(&buffer[SHA_DIGEST_LENGTH + sizeof(time_t)], len - SHA_DIGEST_LENGTH - sizeof(time_t));
 }
 
-void handle_data(NeighborSet &neighbors, const uint8_t *buffer, size_t len, const in_addr &addr) {
+void handle_data(NeighborSet &neighbors, const uint8_t *buffer, ssize_t len, const in_addr &addr) {
     {
         in_addr a { htonl(addr.s_addr) };
         std::ofstream ofs(std::string("/tmp/packet-") + inet_ntoa(a));
@@ -166,6 +166,7 @@ std::pair<RouteSet, std::vector<Node>> derive_routes_and_mytree(const RouteSet &
     }
 
     auto [tree, routes, default_gateway] = merge(trees);
+    routes = aggregate(routes);
     
     if (default_gateway.s_addr != INADDR_ANY) {
         Route default_route;

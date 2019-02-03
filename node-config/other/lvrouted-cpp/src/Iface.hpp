@@ -19,8 +19,8 @@ struct Iface {
     std::string name;
     IfaceType type; 
 
-    int last_associated_update;
-    int last_arp_update;
+    time_t last_associated_update;
+    time_t last_arp_update;
 
     std::optional<EtherAddrSet> arp_table;
     std::optional<EtherAddrSet> associated;

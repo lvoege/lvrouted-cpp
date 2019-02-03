@@ -37,7 +37,7 @@ void broadcast(int fd, const std::vector<Node> &tree, NeighborSet &);
 /* Given a set of neighbors, data in a string and the sockaddr it came from,
    handle it. Verify the signature, find the neighbor associated with the
    address, verify the sequence number, parse the tree and mark the time. */
-void handle_data(NeighborSet &, const uint8_t *, size_t, const in_addr &);
+void handle_data(NeighborSet &, const uint8_t *, ssize_t, const in_addr &);
 
 /* Given a list of neighbors and interface i, invalidate the trees
    for all the neighbors on that interface */

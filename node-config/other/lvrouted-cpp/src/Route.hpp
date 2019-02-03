@@ -55,7 +55,7 @@ extern std::string show(const RouteSet &);
    Finally, take the now aggregated list of routes and create a set of routes,
    with the addresses of the routes masked according to their netmask.
 */
-extern RouteSet aggregate(RouteSet &);
+extern RouteSet aggregate(const RouteSet &);
 
 /*  Given a set of old routes and a set of new routes, produce a list
    of routes to delete, a list of routes to add and a list of routes
