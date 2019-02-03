@@ -63,9 +63,7 @@ std::tuple<Node, RouteSet, in_addr> merge(const std::vector<Node> &trees) {
         }
     };
     std::priority_queue<PriorityQueueElement> todo;
-    syslog(LOG_DEBUG, "MERGE RUN");
     for (auto &tree: trees) {
-        syslog(LOG_DEBUG, "INPUT TREE %s", to_string(tree.children).data());
         todo.emplace(0, tree, new_tree, tree.addr);
     }
     in_addr default_gateway { 0 };
@@ -118,8 +116,6 @@ std::tuple<Node, RouteSet, in_addr> merge(const std::vector<Node> &trees) {
         routing_table.insert(std::move(r));
     }
     
-    syslog(LOG_DEBUG, "Merged tree %s", to_string(new_tree.children).data());
-
     return { std::move(new_tree), std::move(routing_table), std::move(default_gateway) };
 }
 
